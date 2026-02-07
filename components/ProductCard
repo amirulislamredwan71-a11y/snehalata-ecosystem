@@ -1,0 +1,96 @@
+import React from 'react';
+import { Product, Vendor } from '../types';
+import { ExternalLink, ShoppingCart, Camera } from 'lucide-react';
+import { Link } from './Navigation';
+
+interface ProductCardProps {
+  product: Product;
+  vendor?: Vendor;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product, vendor }) => {
+  return (
+    <div className="group relative bg-aura-glass border border-aura-glassBorder rounded-3xl overflow-hidden hover:border-aura-purple/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-900/20">
+      
+      {/* Image Section */}
+      <div className="relative h-64 overflow-hidden">
+        <img 
+          src={product.imageUrl} 
+          alt={product.name} 
+          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+        
+        <div className="absolute top-4 right-4">
+            <span className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-white">
+                {product.category}
+            </span>
+        </div>
+        
+        {/* Virtual Try-On Badge */}
+        <div className="absolute bottom-4 left-4 z-10">
+           <Link 
+             to={`/try-on/${product.id}`}
+             className="bg-aura-purple/90 hover:bg-aura-purple text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 backdrop-blur-md shadow-lg transition-all hover:scale-105"
+           >
+             <Camera size={12} /> Virtual Try-On
+           </Link>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-6 flex flex-col h-[220px]">
+        <div className="mb-auto">
+          {vendor && (
+            <div className="text-xs text-aura-purple uppercase tracking-widest font-bold mb-2 flex items-center gap-1">
+              {vendor.name}
+              {vendor.status === 'APPROVED' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" title="Verified Vendor" />
+              )}
+            </div>
+          )}
+          <h3 className="font-serif text-xl font-bold text-white mb-2 leading-tight">
+            {product.name}
+          </h3>
+          <p className="text-sm text-gray-400 line-clamp-2 font-light">
+            {product.description}
+          </p>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <div className="flex justify-between items-end mb-4">
+            <div className="text-2xl font-bold text-white">
+              ৳{product.price.toLocaleString()}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Link 
+              to={`/store/${vendor?.slug || 'unknown'}`}
+              className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-center transition-colors flex items-center justify-center gap-2"
+            >
+               স্টোর ভিজিট
+            </Link>
+            
+            {product.externalUrl ? (
+              <a 
+                href={product.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-center transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30"
+              >
+                অফিসিয়াল সাইট <ExternalLink size={14} />
+              </a>
+            ) : (
+              <button 
+                className="flex-1 bg-white text-black hover:bg-gray-200 py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-center transition-colors flex items-center justify-center gap-2"
+              >
+                কার্টে যোগ করুন <ShoppingCart size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
