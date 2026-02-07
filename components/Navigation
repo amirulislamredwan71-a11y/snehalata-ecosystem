@@ -1,0 +1,140 @@
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { Cpu, ShoppingBag, LayoutDashboard, Camera, PackageSearch } from 'lucide-react';
+
+// --- Custom Router Implementation ---
+
+const RouterContext = createContext<{ path: string }>({ path: '/' });
+
+export const HashRouter: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [path, setPath] = useState('/');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      let hash = window.location.hash.slice(1);
+      if (!hash) hash = '/';
+      setPath(hash);
+    };
+    
+    // Initialize
+    handleHashChange();
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  return (
+    <RouterContext.Provider value={{ path }}>
+      {children}
+    </RouterContext.Provider>
+  );
+};
+
+export const useLocation = () => {
+  const { path } = useContext(RouterContext);
+  return { pathname: path };
+};
+
+export const useParams = <T extends Record<string, string>>(): T => {
+  const { path } = useContext(RouterContext);
+  const parts = path.split('/');
+  
+  // path format: /:route/:param
+  
+  if (parts[1] === 'store' && parts[2]) {
+      return { slug: parts[2] } as unknown as T;
+  }
+  
+  if (parts[1] === 'try-on' && parts[2]) {
+      return { id: parts[2] } as unknown as T;
+  }
+
+  if (parts[1] === 'tracking' && parts[2]) {
+      return { orderId: parts[2] } as unknown as T;
+  }
+
+  return {} as T;
+};
+
+export const Link: React.FC<{ to: string; className?: string; children: React.ReactNode }> = ({ to, className, children }) => {
+  return (
+    <a href={`#${to}`} className={className}>
+      {children}
+    </a>
+  );
+};
+
+export const Routes: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    return <>{children}</>;
+};
+
+export const Route: React.FC<{ path: string; element: React.ReactNode }> = ({ path, element }) => {
+  const { path: currentPath } = useContext(RouterContext);
+
+  // Exact match
+  if (path === currentPath) {
+    return <>{element}</>;
+  }
+  
+  // Dynamic route match
+  if (path.includes('/:')) {
+      const base = path.split('/:')[0]; // e.g., "/store"
+      // Ensure we match "/store/..." but not just "/store" if expecting a param
+      if (currentPath.startsWith(base + '/') && currentPath.length > base.length + 1) {
+          return <>{element}</>;
+      }
+  }
+
+  return null;
+};
+
+// --- Navigation Component ---
+
+export const Navigation: React.FC = () => {
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path 
+    ? "text-white bg-white/10" 
+    : "text-gray-400 hover:text-white hover:bg-white/5";
+
+  return (
+    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-black/70 border-b border-aura-glassBorder">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="relative">
+            <Cpu className="text-aura-purple animate-pulse-slow group-hover:scale-110 transition-transform" size={32} />
+            <div className="absolute inset-0 bg-purple-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-serif text-2xl font-bold tracking-widest text-white leading-none">
+              SNEHALATA-স্নেহলতা
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-aura-purple font-bold">
+              Aura Ecosystem
+            </span>
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <Link 
+            to="/" 
+            className={`hidden md:block px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${isActive('/')}`}
+          >
+            Hub (নীড়)
+          </Link>
+          <Link 
+            to="/tracking" 
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${isActive('/tracking')}`}
+          >
+             <PackageSearch size={14} /> ট্র্যাকিং
+          </Link>
+          <Link 
+            to="/dashboard" 
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${isActive('/dashboard')}`}
+          >
+            <LayoutDashboard size={14} /> Vendor Console
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+};
