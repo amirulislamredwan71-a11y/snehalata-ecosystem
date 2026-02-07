@@ -1,0 +1,8 @@
+{
+  "name": "Snehalata-স্নেহলতা (Clothing Hub Aura Ai Ecosystem)",
+  "description": "Aura AI-powered multi-vendor e-commerce ecosystem with governance and direct-to-vendor sales integration.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
