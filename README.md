@@ -44,7 +44,7 @@
     ```
 4.  Create a `.env` file in the root directory and add your API key:
     ```env
-    API_KEY=AIzaSyBcTxHEFwSzb2rP1zxJmbnBWySDfMeFiIk
+    API_KEY=
 
     ```
 5.  Start the development server:
@@ -58,4 +58,5 @@ This project is proprietary software of the Snehalata Ecosystem. All rights rese
 
 ---
 *Powered by Aura Neural Engine v3.1*
+
 
