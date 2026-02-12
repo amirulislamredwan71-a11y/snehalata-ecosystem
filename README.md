@@ -44,8 +44,7 @@
     ```
 4.  Create a `.env` file in the root directory and add your API key:
     ```env
-    API_KEY=
-
+    API_KEY=your_google_gemini_api_key_here
     ```
 5.  Start the development server:
     ```bash
@@ -58,6 +57,3 @@ This project is proprietary software of the Snehalata Ecosystem. All rights rese
 
 ---
 *Powered by Aura Neural Engine v3.1*
-
-
-
